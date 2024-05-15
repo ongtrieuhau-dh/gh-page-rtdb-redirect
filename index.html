@@ -1,51 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Redirecting...</title>
-        <meta name="referrer" content="never" />   
-    </head>
+  <head>
+    <title>Redirecting...</title>
+    <meta name="referrer" content="never" />
+  </head>
 
-    <body>
-        <p id="text"></p>
-        <script>
-            document.getElementById("text").innerHTML = "redirecting...";
-            function getParameterByName(name, url) {
-                if (!url) {
-                    url = window.location.href;
-                }
-                name = name.replace(/[\[\]]/g, "\\$&");
-                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                    results = regex.exec(url);
-                if (!results) return null;
-                if (!results[2]) return '';
-                return decodeURIComponent(results[2].replace(/\+/g, " "));
+  <body>
+    <p id="text"></p>
+    <script>
+      document.getElementById("text").innerHTML = "redirecting...";
+      function getParameterByName(name, url) {
+        if (!url) {
+          url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return "";
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+      }
+      // url = getParameterByName("url");
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
+      const searchParams = new URLSearchParams(window.location.href);
+      let redirect_url = searchParams.get("redirect_url");
+      console.log(filename, searchParams);
+      fetch(redirect_url, requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          let url = JSON.parse(result);
+          if (url) {
+            try {
+              new URL(url); // Will throw error for invalid URLs
+              window.location.href = url;
+            } catch (_) {
+              document.getElementById("text").innerHTML = "Error: invalid URL";
             }
-            // url = getParameterByName("url");
-			const requestOptions = {
-  method: "GET",
-  redirect: "follow"
-};
-const searchParams = new URLSearchParams(window.location.href);
-let filename=searchParams.get("id");
-console.log(filename, searchParams)
-fetch(`https://o-dh-007-default-rtdb.asia-southeast1.firebasedatabase.app/${filename}.json`, requestOptions)
-  .then((response) => response.text())
-  .then((result) => {
-    let url = JSON.parse(result);
-     if (url) {
-                try {
-                    new URL(url); // Will throw error for invalid URLs
-                    window.location.href = url;
-                } catch (_) {
-                    document.getElementById("text").innerHTML = "Error: invalid URL";
-                }
-            } else {
-                document.getElementById("text").innerHTML = "Error: no valid parameter";
-            }
-  })
-  .catch((error) => console.error(error));
-           
-        </script>
-
-    </body>
+          } else {
+            document.getElementById("text").innerHTML = "Error: no valid parameter";
+          }
+        })
+        .catch((error) => console.error(error));
+    </script>
+  </body>
 </html>
